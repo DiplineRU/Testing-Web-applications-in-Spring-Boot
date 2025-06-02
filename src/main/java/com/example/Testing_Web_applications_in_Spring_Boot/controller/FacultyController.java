@@ -23,7 +23,7 @@ public class FacultyController {
     public ResponseEntity<Faculty> getFacultyInfo(@PathVariable Long id) {
         Faculty faculty = facultService.findFaculty(id);
         if (faculty == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // Вернет 404
         }
         return ResponseEntity.ok(faculty);
     }
@@ -53,17 +53,19 @@ public class FacultyController {
 
     @PutMapping //PUT
     public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty) {
-        Faculty foundFaculty = facultService.editFaculty(faculty);
-        if (foundFaculty == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        Faculty updated = facultService.editFaculty(faculty);
+        if (updated == null) {
+            return ResponseEntity.notFound().build(); // 404
         }
-        return ResponseEntity.ok(foundFaculty);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("{id}") //DELETE
-    public ResponseEntity deleteFaculty(@PathVariable Long id) {
-        facultService.deleteFaculty(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteFaculty(@PathVariable Long id) {
+        if (facultService.deleteFaculty(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build(); // 404 если не найден
     }
 
     @GetMapping("{id}/students")
