@@ -19,15 +19,22 @@ public class FacultService {
     }
 
     public Faculty findFaculty(long id) {
-        return facultyRepository.findById(id).get();
+        return facultyRepository.findById(id).orElse(null);
     }
 
     public Faculty editFaculty(Faculty faculty) {
-        return facultyRepository.save(faculty);
+        if (facultyRepository.existsById(faculty.getId())) { // Проверяем существование
+            return facultyRepository.save(faculty);
+        }
+        return null; // Или кидаем исключение
     }
 
-    public void deleteFaculty(long id) {
-        facultyRepository.deleteById(id);
+    public boolean deleteFaculty(long id) {
+        if (facultyRepository.existsById(id)) {
+            facultyRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public Collection<Faculty> getAllFaculty() {
